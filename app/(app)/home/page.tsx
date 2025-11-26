@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Sparkles, Calendar, MessageCircle, Plus, Search, MapPin, Users, X } from 'lucide-react'
+import { Sparkles, Calendar, MessageCircle, Plus, Search, MapPin, Users, X, Copy, Check } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function HomePage() {
   // TODO: 실제로는 API로 팀 보유 여부 체크
@@ -16,6 +17,8 @@ export default function HomePage() {
   const [teamName, setTeamName] = useState('세종 born')
   const [teamPhoto, setTeamPhoto] = useState('')
   const [showNearbyTeamsModal, setShowNearbyTeamsModal] = useState(false)
+  const [selectedTeam, setSelectedTeam] = useState<number | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     // localStorage에서 팀 정보 로드
@@ -36,6 +39,10 @@ export default function HomePage() {
       level: 'A',
       sports: '농구',
       avatar: null,
+      kakaoId: 'thunder_captain',
+      totalMatches: 18,
+      aiReports: 14,
+      activeDays: 45,
     },
     {
       id: 2,
@@ -46,6 +53,10 @@ export default function HomePage() {
       level: 'S',
       sports: '농구',
       avatar: null,
+      kakaoId: 'warrior_leader',
+      totalMatches: 32,
+      aiReports: 28,
+      activeDays: 120,
     },
     {
       id: 3,
@@ -56,6 +67,10 @@ export default function HomePage() {
       level: 'A',
       sports: '농구',
       avatar: null,
+      kakaoId: 'tigers_chief',
+      totalMatches: 25,
+      aiReports: 20,
+      activeDays: 80,
     },
     {
       id: 4,
@@ -66,6 +81,10 @@ export default function HomePage() {
       level: 'B',
       sports: '농구',
       avatar: null,
+      kakaoId: 'eagles_boss',
+      totalMatches: 12,
+      aiReports: 10,
+      activeDays: 30,
     },
     {
       id: 5,
@@ -76,8 +95,25 @@ export default function HomePage() {
       level: 'A',
       sports: '농구',
       avatar: null,
+      kakaoId: 'phoenix_head',
+      totalMatches: 22,
+      aiReports: 18,
+      activeDays: 65,
     },
   ]
+
+  const handleCopyKakaoId = async (kakaoId: string) => {
+    try {
+      await navigator.clipboard.writeText(kakaoId)
+      setCopied(true)
+      toast.success('카카오톡 ID가 복사되었습니다!')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      toast.error('복사에 실패했습니다.')
+    }
+  }
+
+  const currentTeam = nearbyTeams.find((team) => team.id === selectedTeam)
 
   // 팀 없음 상태
   if (!hasTeam) {
@@ -207,24 +243,44 @@ export default function HomePage() {
             팀 찾기
           </h3>
 
-          <Card
-            className="cursor-pointer overflow-hidden border-border/50 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent transition-all hover:border-primary/50"
-            onClick={() => setShowNearbyTeamsModal(true)}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
-                  <Search className="h-6 w-6 text-primary" />
+          <div className="space-y-3">
+            <Card
+              className="cursor-pointer overflow-hidden border-border/50 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent transition-all hover:border-primary/50"
+              onClick={() => setShowNearbyTeamsModal(true)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
+                    <Search className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="mb-1 font-bold text-foreground">새로운 팀 찾기</h4>
+                    <p className="text-xs text-muted-foreground">
+                      함께 경기를 즐길 완벽한 팀을 찾아보세요
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="mb-1 font-bold text-foreground">새로운 팀 찾기</h4>
-                  <p className="text-xs text-muted-foreground">
-                    함께 경기를 즐길 완벽한 팀을 찾아보세요
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            <Link href="/team/create">
+              <Card className="cursor-pointer overflow-hidden border-border/50 bg-card transition-all hover:border-primary/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
+                      <Plus className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="mb-1 font-bold text-foreground">팀 생성하기</h4>
+                      <p className="text-xs text-muted-foreground">
+                        새로운 팀을 만들고 팀원을 모집하세요
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
         </div>
 
         {/* 최근 AI 코칭 */}
@@ -305,6 +361,7 @@ export default function HomePage() {
               <Card
                 key={team.id}
                 className="cursor-pointer border-border/50 bg-card transition-all hover:border-primary/50"
+                onClick={() => setSelectedTeam(team.id)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
@@ -360,6 +417,92 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* 팀 상세 모달 */}
+      {currentTeam && (
+        <Dialog open={selectedTeam !== null} onOpenChange={() => setSelectedTeam(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">팀 정보</DialogTitle>
+            </DialogHeader>
+
+            {/* Team Profile */}
+            <Card className="overflow-hidden border-border/50 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    {currentTeam.avatar ? (
+                      <img src={currentTeam.avatar} alt="Team" className="h-20 w-20 rounded-2xl object-cover" />
+                    ) : (
+                      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-2xl font-bold text-primary-foreground">
+                        {currentTeam.name.substring(0, 2)}
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="mb-1 text-2xl font-bold text-foreground">{currentTeam.name}</h2>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-primary/20 text-primary">레벨 {currentTeam.level}</Badge>
+                        <Badge variant="secondary" className="text-xs">{currentTeam.location.split(' ')[0]}</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-4 rounded-lg bg-card/50 p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <MessageCircle className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-semibold text-foreground">팀장 카카오톡 ID</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-bold text-foreground">{currentTeam.kakaoId}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopyKakaoId(currentTeam.kakaoId)}
+                      className="min-w-[60px]"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="mr-1 h-4 w-4" />
+                          완료
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="mr-1 h-4 w-4" />
+                          복사
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-lg bg-card/50 p-3 text-center">
+                    <p className="text-2xl font-bold text-foreground">{currentTeam.totalMatches}</p>
+                    <p className="text-xs text-muted-foreground">총 경기</p>
+                  </div>
+                  <div className="rounded-lg bg-card/50 p-3 text-center">
+                    <p className="text-2xl font-bold text-foreground">{currentTeam.aiReports}</p>
+                    <p className="text-xs text-muted-foreground">AI 리포트</p>
+                  </div>
+                  <div className="rounded-lg bg-card/50 p-3 text-center">
+                    <p className="text-2xl font-bold text-foreground">{currentTeam.activeDays}일</p>
+                    <p className="text-xs text-muted-foreground">활동</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Button
+              variant="outline"
+              className="mt-4 w-full"
+              onClick={() => setSelectedTeam(null)}
+            >
+              닫기
+            </Button>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
