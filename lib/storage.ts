@@ -141,7 +141,7 @@ export const formatTimeAgo = (dateString: string): string => {
 // Mock 데이터 초기화 (개발용)
 export const initMockData = (): void => {
   const mockTeam: Team = {
-    id: 'team1',
+    id: '1',
     name: '세종 born',
     shortName: 'SB',
     memberCount: 5,
@@ -155,6 +155,75 @@ export const initMockData = (): void => {
     captainId: 'user1',
     description: '주말 오후에 활동하는 친목 위주 팀입니다.',
   }
+
+  // 매칭 페이지에 표시될 다른 팀들
+  const mockTeams: Team[] = [
+    mockTeam,
+    {
+      id: '2',
+      name: '강남 Dunkers',
+      shortName: 'GD',
+      memberCount: 3,
+      maxMembers: 5,
+      level: 'B+',
+      region: '강남구',
+      matchScore: 92,
+      isOfficial: false,
+      captainId: 'user2',
+      description: '농구 좋아하는 사람들의 모임! 편하게 함께해요.',
+      totalGames: 8,
+      aiReports: 5,
+      activeDays: 20,
+    },
+    {
+      id: '3',
+      name: '서초 Shooters',
+      shortName: 'SS',
+      memberCount: 5,
+      maxMembers: 8,
+      level: 'A',
+      region: '서초구',
+      matchScore: 88,
+      isOfficial: true,
+      captainId: 'user3',
+      description: '주말 아침에 주로 활동합니다.',
+      totalGames: 15,
+      aiReports: 12,
+      activeDays: 40,
+    },
+    {
+      id: '4',
+      name: '용산 Ballers',
+      shortName: 'YB',
+      memberCount: 4,
+      maxMembers: 6,
+      level: 'B',
+      region: '용산구',
+      matchScore: 85,
+      isOfficial: true,
+      captainId: 'user4',
+      description: '경기 위주 팀입니다. 실력 향상을 목표로 합니다.',
+      totalGames: 12,
+      aiReports: 10,
+      activeDays: 30,
+    },
+    {
+      id: '5',
+      name: '강서 Hoopers',
+      shortName: 'GH',
+      memberCount: 6,
+      maxMembers: 8,
+      level: 'A',
+      region: '강서구',
+      matchScore: 90,
+      isOfficial: true,
+      captainId: 'user5',
+      description: '잠실 코트에서 주로 활동합니다.',
+      totalGames: 22,
+      aiReports: 18,
+      activeDays: 55,
+    },
+  ]
 
   const mockRequests: MatchRequest[] = [
     {
@@ -171,7 +240,7 @@ export const initMockData = (): void => {
         aiReports: 15,
         activeDays: 60,
         isOfficial: true,
-        captainId: 'user2',
+        captainId: 'user_thunder',
         description: '승부욕 강한 경쟁 중심 팀',
       },
       toTeam: mockTeam,
@@ -193,7 +262,7 @@ export const initMockData = (): void => {
         aiReports: 8,
         activeDays: 30,
         isOfficial: true,
-        captainId: 'user3',
+        captainId: 'user_warriors',
         description: '주말 저녁 위주 활동',
       },
       toTeam: mockTeam,
@@ -215,7 +284,7 @@ export const initMockData = (): void => {
         aiReports: 20,
         activeDays: 90,
         isOfficial: true,
-        captainId: 'user4',
+        captainId: 'user_dragons',
         description: '실력 향상 중심 팀',
       },
       toTeam: mockTeam,
@@ -229,9 +298,9 @@ export const initMockData = (): void => {
     user: {
       id: 'user1',
       name: '홍길동',
-      currentTeamId: 'team1',
+      currentTeamId: '1',
     },
-    teams: [mockTeam],
+    teams: mockTeams,
     matchRequests: mockRequests,
   }
 

@@ -176,7 +176,7 @@ export default function CreateTeamPage() {
             size="icon"
             variant="ghost"
             className="rounded-full"
-            onClick={() => router.push('/matching')}
+            onClick={() => router.back()}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
