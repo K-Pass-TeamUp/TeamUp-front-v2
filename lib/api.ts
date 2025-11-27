@@ -1,3 +1,5 @@
+import type { Court, NearbyTeam } from '@/types';
+
 // API 클라이언트 설정
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -18,19 +20,22 @@ async function fetchAPI(endpoint: string, options?: RequestInit) {
   return response.json();
 }
 
-// API 함수들 (백엔드 연동 시 사용)
+// Mock 데이터 (백엔드 완성 전까지 사용)
+const mockCourts: Court[] = [];
+const mockNearbyTeams: NearbyTeam[] = [];
+
 export const api = {
   // User APIs
   getMe: () => fetchAPI('/users/me'),
   getUser: (id: string) => fetchAPI(`/users/${id}`),
 
-  // Team APIs (여러 팀 지원)
-  getMyTeams: () => fetchAPI('/teams/my'), // 내가 속한 모든 팀
+  // Team APIs
+  getMyTeams: () => fetchAPI('/teams/my'),
   getTeam: (id: string) => fetchAPI(`/teams/${id}`),
   searchTeams: (query: string, filters?: { region?: string; level?: string }) =>
     fetchAPI(`/teams/search?q=${query}&region=${filters?.region || ''}&level=${filters?.level || ''}`),
 
-  // 팀 생성 (AI 매칭용 데이터 포함)
+  // 팀 생성
   createTeam: (data: {
     name: string;
     region: string;
@@ -42,14 +47,17 @@ export const api = {
     travelDistance?: string | null;
     maxMembers?: number;
     description?: string;
-  }) => fetchAPI('/teams', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
+  }) =>
+    fetchAPI('/teams', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
-  leaveTeam: (teamId: string) => fetchAPI(`/teams/${teamId}/leave`, {
-    method: 'POST',
-  }),
+  // 팀 탈퇴
+  leaveTeam: (teamId: string) =>
+    fetchAPI(`/teams/${teamId}/leave`, {
+      method: 'POST',
+    }),
 
   // Team Detail & Join APIs
   getTeamDetail: (teamId: string) => fetchAPI(`/teams/${teamId}/detail`),
@@ -63,12 +71,12 @@ export const api = {
       body: JSON.stringify(data || {}),
     }),
 
-  // 팀장 연락처 (참여 승인 후에만)
+  // 팀장 연락처
   getTeamContact: (teamId: string) => fetchAPI(`/teams/${teamId}/contact`),
 
   // Match Request APIs
-  getMatchRequests: () => fetchAPI('/match-requests/received'), // 받은 매칭 요청
-  getSentMatchRequests: () => fetchAPI('/match-requests/sent'), // 보낸 매칭 요청
+  getMatchRequests: () => fetchAPI('/match-requests/received'),
+  getSentMatchRequests: () => fetchAPI('/match-requests/sent'),
   sendMatchRequest: (toTeamId: string, fromTeamId: string, message: string) =>
     fetchAPI('/match-requests', {
       method: 'POST',
@@ -94,22 +102,19 @@ export const api = {
       method: 'PUT',
     }),
 
-  // AI APIs (AI 팀 연동)
-  // AI가 유저와 팀 간의 매칭 적합도 분석
+  // AI APIs
   getMatchScore: (userId: string, teamId: string) =>
     fetchAPI('/ai/match-score', {
       method: 'POST',
       body: JSON.stringify({ userId, teamId }),
     }),
 
-  // AI 코칭 리포트 생성
   generateCoachingReport: (gameId: string) =>
     fetchAPI('/ai/coaching-report', {
       method: 'POST',
       body: JSON.stringify({ gameId }),
     }),
 
-  // AI 기반 팀 추천
   getRecommendedTeams: (userId: string) =>
     fetchAPI(`/ai/recommend-teams?userId=${userId}`),
 };
