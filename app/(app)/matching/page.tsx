@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Sparkles, Search, Plus, Users, MapPin, AlertCircle, Check } from 'lucide-react'
+import { Sparkles, Users, MapPin, AlertCircle, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { getReceivedMatchRequests, updateMatchRequestStatus, formatTimeAgo } from '@/lib/storage'
 import type { Team, MatchRequest } from '@/types'
@@ -107,15 +108,15 @@ export default function MatchingPage() {
   const matchTeams = mockTeams.filter(t => t.isOfficial) // 정식 팀
   const matchedTeams: Team[] = [] // TODO: 매칭된 팀 (localStorage에서 로드)
 
-  // localStorage에서 받은 매칭 요청 로드
-  useEffect(() => {
-    loadMatchRequests()
-  }, [])
-
   const loadMatchRequests = () => {
     const requests = getReceivedMatchRequests()
     setMatchRequests(requests)
   }
+
+  // localStorage에서 받은 매칭 요청 로드
+  useEffect(() => {
+    loadMatchRequests()
+  }, [])
 
   // TODO: 실제 API 연동
   // useEffect(() => {
@@ -158,17 +159,18 @@ export default function MatchingPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
+          <Image
+            src="/images/logo.jpg"
+            alt="TeamUp Logo"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-xl object-contain"
+          />
           <div>
             <h1 className="text-2xl font-bold tracking-tight">팀 매칭</h1>
             <p className="text-sm text-muted-foreground">AI가 추천하는 최적의 팀</p>
           </div>
-          <Link href="/team/create">
-            <Button size="sm" className="font-semibold">
-              <Plus className="mr-2 h-4 w-4" />
-              팀 생성
-            </Button>
-          </Link>
         </div>
       </header>
 

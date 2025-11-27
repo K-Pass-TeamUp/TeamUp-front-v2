@@ -53,11 +53,15 @@ export default function MyPage() {
     <div className="min-h-screen bg-background pb-20">
       {/* 헤더 */}
       <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-4">
+          <Image
+            src="/images/logo.jpg"
+            alt="TeamUp Logo"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-xl object-contain"
+          />
           <h1 className="text-2xl font-bold tracking-tight">마이페이지</h1>
-          <div className="relative h-8 w-8 overflow-hidden rounded-lg">
-            <Image src="/images/logo.jpg" alt="TeamUp" fill className="object-cover" />
-          </div>
         </div>
       </header>
 
