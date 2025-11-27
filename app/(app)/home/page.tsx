@@ -2,42 +2,64 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Sparkles, Calendar, MessageCircle, Plus, Search } from 'lucide-react'
+import { Sparkles, MessageCircle, Plus, Search } from 'lucide-react'
+import { toast } from 'sonner'
+import { getReceivedMatchRequests, getLatestMatchRequest, formatTimeAgo, initMockData, updateMatchRequestStatus } from '@/lib/storage'
+import type { MatchRequest } from '@/types'
+import { MatchRequestsModal } from '@/components/shared/match-requests-modal'
 
 export default function HomePage() {
   // TODO: 실제로는 API로 팀 보유 여부 체크
-  const [hasTeam, setHasTeam] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [hasTeam, setHasTeam] = useState(true) // Mock: 팀 있음 상태로 시작
+  const [teamName, setTeamName] = useState('세종 born')
+  const [teamPhoto, setTeamPhoto] = useState('')
+  const [teamId, setTeamId] = useState('1') // Mock 팀 ID
+
+  // 매칭 요청 관련 상태
+  const [showMatchRequestsModal, setShowMatchRequestsModal] = useState(false)
+  const [matchRequests, setMatchRequests] = useState<MatchRequest[]>([])
+  const [latestRequest, setLatestRequest] = useState<MatchRequest | null>(null)
+
+  const loadMatchRequests = () => {
+    const requests = getReceivedMatchRequests()
+    setMatchRequests(requests)
+    setLatestRequest(getLatestMatchRequest())
+  }
 
   useEffect(() => {
-    // TODO: 실제 API 연동 시 여기서 팀 체크
-    // const checkTeam = async () => {
-    //   try {
-    //     const response = await fetch('/api/team/my')
-    //     setHasTeam(response.ok)
-    //   } catch (error) {
-    //     setHasTeam(false)
-    //   } finally {
-    //     setLoading(false)
-    //   }
+    // Mock 데이터 초기화 (개발용)
+    // TODO: 테스트 후 아래 주석 해제하여 한 번만 실행되게 변경
+    // const hasInitialized = localStorage.getItem('teamup_initialized')
+    // if (!hasInitialized) {
+    //   initMockData()
+    //   localStorage.setItem('teamup_initialized', 'true')
     // }
-    // checkTeam()
 
-    // Mock: 현재는 팀 없음으로 시작
-    setTimeout(() => setLoading(false), 500)
+    // 임시: 항상 초기화 (매칭 요청 3개 보기 위해)
+    initMockData()
+
+    // localStorage에서 팀 정보 로드
+    const savedName = localStorage.getItem('teamName')
+    const savedPhoto = localStorage.getItem('teamPhoto')
+    if (savedName) setTeamName(savedName)
+    if (savedPhoto) setTeamPhoto(savedPhoto)
+
+    // 팀 ID 로드
+    const appDataStr = localStorage.getItem('teamup_app_data')
+    if (appDataStr) {
+      const appData = JSON.parse(appDataStr)
+      const currentTeamId = appData.user?.currentTeamId
+      if (currentTeamId) setTeamId(currentTeamId)
+    }
+
+    // 매칭 요청 로드
+    loadMatchRequests()
   }, [])
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    )
-  }
 
   // 팀 없음 상태
   if (!hasTeam) {
@@ -46,9 +68,13 @@ export default function HomePage() {
         <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg">
           <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                <Sparkles className="h-6 w-6 text-primary-foreground" />
-              </div>
+              <Image
+                src="/images/logo.jpg"
+                alt="TeamUp Logo"
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-xl object-contain"
+              />
               <h1 className="text-2xl font-bold tracking-tight">TeamUp</h1>
             </div>
             <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -95,9 +121,13 @@ export default function HomePage() {
       <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-lg">
         <div className="mx-auto flex max-w-lg items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <Sparkles className="h-6 w-6 text-primary-foreground" />
-            </div>
+            <Image
+              src="/images/logo.jpg"
+              alt="TeamUp Logo"
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-xl object-contain"
+            />
             <h1 className="text-2xl font-bold tracking-tight">TeamUp</h1>
           </div>
           <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -114,15 +144,19 @@ export default function HomePage() {
             내 팀
           </h3>
 
-          <Link href="/team">
+          <Link href={`/team/${teamId}`}>
             <Card className="cursor-pointer overflow-hidden border-border/50 bg-card transition-all hover:border-primary/50">
               <CardContent className="p-0">
                 <div className="flex items-center gap-4 p-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-primary-foreground">
-                    SB
-                  </div>
+                  {teamPhoto ? (
+                    <img src={teamPhoto} alt="Team" className="h-16 w-16 rounded-2xl object-cover" />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-primary-foreground">
+                      SB
+                    </div>
+                  )}
                   <div className="flex-1">
-                    <h3 className="mb-1 font-bold text-foreground">세종 born</h3>
+                    <h3 className="mb-1 font-bold text-foreground">{teamName}</h3>
                     <div className="flex items-center gap-2">
                       <p className="text-sm text-muted-foreground">팀원 5명</p>
                       <Badge variant="secondary" className="text-xs">레벨 A</Badge>
@@ -149,6 +183,51 @@ export default function HomePage() {
           </Link>
         </div>
 
+        {/* 팀 검색 */}
+        <div className="mb-6">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            팀 찾기
+          </h3>
+
+          <div className="space-y-3">
+            <Link href="/matching">
+              <Card className="cursor-pointer overflow-hidden border-border/50 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent transition-all hover:border-primary/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20">
+                      <Search className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="mb-1 font-bold text-foreground">팀 찾기</h4>
+                      <p className="text-xs text-muted-foreground">
+                        AI 추천 팀을 확인하고 매칭하세요
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/team/create">
+              <Card className="cursor-pointer overflow-hidden border-border/50 bg-card transition-all hover:border-primary/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary">
+                      <Plus className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="mb-1 font-bold text-foreground">팀 생성하기</h4>
+                      <p className="text-xs text-muted-foreground">
+                        새로운 팀을 만들고 팀원을 모집하세요
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
         {/* 최근 AI 코칭 */}
         <div className="mb-6">
           <div className="mb-3 flex items-center gap-2">
@@ -161,7 +240,7 @@ export default function HomePage() {
               <div className="mb-3 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-foreground">8월 10일 경기 분석</p>
-                  <p className="text-xs text-muted-foreground">세종 born vs 서울 Tigers</p>
+                  <p className="text-xs text-muted-foreground">{teamName} vs 서울 Tigers</p>
                 </div>
                 <Badge className="bg-primary/10 text-primary">승리</Badge>
               </div>
@@ -195,22 +274,60 @@ export default function HomePage() {
           </h3>
 
           <div className="space-y-2">
-            <Card className="border-border/50 bg-card">
-              <CardContent className="flex items-center gap-3 p-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                  <MessageCircle className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-foreground">새로운 매칭 요청</p>
-                  <p className="text-xs text-muted-foreground">관악 Thunders가 매칭을 신청했습니다</p>
-                </div>
-              </CardContent>
-            </Card>
+            {latestRequest ? (
+              <Card
+                className="cursor-pointer border-border/50 bg-card transition-all hover:border-primary/50"
+                onClick={() => setShowMatchRequestsModal(true)}
+              >
+                <CardContent className="flex items-center gap-3 p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                    <MessageCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">새로운 매칭 요청</p>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                        {matchRequests.length}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {latestRequest.fromTeam.name}가 매칭을 신청했습니다
+                    </p>
+                    <p className="text-xs text-muted-foreground/60">
+                      {formatTimeAgo(latestRequest.createdAt)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border-border/50 bg-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-sm text-muted-foreground">최근 활동이 없습니다</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>
 
       <BottomNav />
+
+      {/* 받은 매칭 요청 모달 */}
+      <MatchRequestsModal
+        open={showMatchRequestsModal}
+        onOpenChange={setShowMatchRequestsModal}
+        matchRequests={matchRequests}
+        onAccept={(requestId, teamName) => {
+          updateMatchRequestStatus(requestId, 'accepted')
+          toast.success(`${teamName}의 매칭 요청을 수락했습니다!`)
+          loadMatchRequests()
+        }}
+        onReject={(requestId) => {
+          updateMatchRequestStatus(requestId, 'rejected')
+          toast.success('매칭 요청을 거절했습니다')
+          loadMatchRequests()
+        }}
+      />
     </div>
   )
 }

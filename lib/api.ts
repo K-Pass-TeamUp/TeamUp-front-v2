@@ -21,166 +21,100 @@ async function fetchAPI(endpoint: string, options?: RequestInit) {
 }
 
 // Mock 데이터 (백엔드 완성 전까지 사용)
+const mockCourts: Court[] = [];
+const mockNearbyTeams: NearbyTeam[] = [];
 
-const mockCourts: Court[] = [
-  {
-    id: '1',
-    name: '광진 농구장',
-    address: '서울 광진구 능동로 123',
-    type: '실외',
-    lat: 37.5465,
-    lng: 127.0735,
-    distance: 0.3
-  },
-  {
-    id: '2',
-    name: '워커힐 체육관',
-    address: '서울 광진구 워커힐로 177',
-    type: '실내',
-    lat: 37.5545,
-    lng: 127.1135,
-    distance: 0.8
-  },
-  {
-    id: '3',
-    name: '능동 체육공원',
-    address: '서울 광진구 능동로 216',
-    type: '실외',
-    lat: 37.5485,
-    lng: 127.0785,
-    distance: 1.2
-  },
-];
-
-const mockNearbyTeams: NearbyTeam[] = [
-  {
-    id: '1',
-    name: '세종 born_9',
-    date: '5월 11일',
-    time: '오후 6시',
-    location: '광진구 능동로',
-    level: 'A',
-    isOfficial: true,
-    members: 5,
-    maxMembers: 5,
-    lat: 37.5465,
-    lng: 127.0735,
-    distance: 0.3
-  },
-  {
-    id: '2',
-    name: '세종 born_10',
-    date: '5월 12일',
-    time: '오후 7시',
-    location: '광진구 능동로',
-    level: 'A+',
-    isOfficial: false,
-    members: 3,
-    maxMembers: 5,
-    lat: 37.5470,
-    lng: 127.0740,
-    distance: 0.4
-  },
-  {
-    id: '3',
-    name: '세종 born_11',
-    date: '5월 13일',
-    time: '오후 8시',
-    location: '광진구 능동로',
-    level: 'A-',
-    isOfficial: true,
-    members: 5,
-    maxMembers: 5,
-    lat: 37.5475,
-    lng: 127.0745,
-    distance: 0.5
-  },
-  {
-    id: '4',
-    name: '광진 Thunder',
-    date: '5월 14일',
-    time: '오후 5시',
-    location: '광진구 자양동',
-    level: 'B+',
-    isOfficial: true,
-    members: 5,
-    maxMembers: 5,
-    lat: 37.5345,
-    lng: 127.0685,
-    distance: 1.8
-  },
-  {
-    id: '5',
-    name: '능동 Warriors',
-    date: '5월 15일',
-    time: '오후 6시 30분',
-    location: '광진구 능동로',
-    level: 'A',
-    isOfficial: false,
-    members: 4,
-    maxMembers: 5,
-    lat: 37.5480,
-    lng: 127.0750,
-    distance: 0.6
-  },
-];
-
-// API 함수들 (백엔드 연동 시 사용)
 export const api = {
-  // Team APIs
-  getTeam: (id: string) => fetchAPI(`/teams/${id}`),
-  getMyTeam: () => fetchAPI('/teams/my'),
-
-  // Matching APIs
-  getMatches: () => fetchAPI('/matches'),
-  createMatch: (data: any) => fetchAPI('/matches', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-
   // User APIs
-  getUser: (id: string) => fetchAPI(`/users/${id}`),
   getMe: () => fetchAPI('/users/me'),
+  getUser: (id: string) => fetchAPI(`/users/${id}`),
 
-  // Map APIs (백엔드 준비되면 실제 API로 교체)
-  map: {
-    // 주변 농구장 가져오기 (거리순 정렬, 가까운 2개만)
-    getNearbyCourts: async (lat: number, lng: number): Promise<Court[]> => {
-      // TODO: 백엔드 API 연동
-      // return fetchAPI(`/courts/nearby?lat=${lat}&lng=${lng}&limit=2`);
+  // Team APIs
+  getMyTeams: () => fetchAPI('/teams/my'),
+  getTeam: (id: string) => fetchAPI(`/teams/${id}`),
+  searchTeams: (query: string, filters?: { region?: string; level?: string }) =>
+    fetchAPI(`/teams/search?q=${query}&region=${filters?.region || ''}&level=${filters?.level || ''}`),
 
-      // 현재: Mock 데이터 반환 (거리순 정렬, 2개만)
-      await new Promise(resolve => setTimeout(resolve, 300)); // 로딩 시뮬레이션
-      return mockCourts.slice(0, 2);
-    },
+  // 팀 생성
+  createTeam: (data: {
+    name: string;
+    region: string;
+    level: string;
+    preferredTime?: string | null;
+    playStyle?: string | null;
+    gameFrequency?: string | null;
+    teamMood?: string | null;
+    travelDistance?: string | null;
+    maxMembers?: number;
+    description?: string;
+  }) =>
+    fetchAPI('/teams', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
-    // 주변 팀 가져오기 (같은 지역 1개만 표시)
-    getNearbyTeams: async (lat: number, lng: number): Promise<NearbyTeam[]> => {
-      // TODO: 백엔드 API 연동
-      // return fetchAPI(`/teams/nearby?lat=${lat}&lng=${lng}`);
+  // 팀 탈퇴
+  leaveTeam: (teamId: string) =>
+    fetchAPI(`/teams/${teamId}/leave`, {
+      method: 'POST',
+    }),
 
-      // 현재: Mock 데이터 반환 (같은 지역 1개만)
-      await new Promise(resolve => setTimeout(resolve, 300));
+  // Team Detail & Join APIs
+  getTeamDetail: (teamId: string) => fetchAPI(`/teams/${teamId}/detail`),
+  getTeamMembers: (teamId: string) => fetchAPI(`/teams/${teamId}/members`),
+  checkTeamMembership: (teamId: string) => fetchAPI(`/teams/${teamId}/is-member`),
 
-      // 같은 location끼리 그룹핑 (프론트 임시 로직, 나중에 백엔드에서 처리)
-      const grouped = mockNearbyTeams.reduce((acc, team) => {
-        if (!acc[team.location]) {
-          acc[team.location] = team; // 첫 번째 팀만 저장
-        }
-        return acc;
-      }, {} as Record<string, NearbyTeam>);
+  // 팀 참여 요청
+  joinTeam: (teamId: string, data?: { message?: string }) =>
+    fetchAPI(`/teams/${teamId}/join`, {
+      method: 'POST',
+      body: JSON.stringify(data || {}),
+    }),
 
-      return Object.values(grouped).slice(0, 1);
-    },
+  // 팀장 연락처
+  getTeamContact: (teamId: string) => fetchAPI(`/teams/${teamId}/contact`),
 
-    // 전체 팀 목록 (전체보기)
-    getAllNearbyTeams: async (lat: number, lng: number): Promise<NearbyTeam[]> => {
-      // TODO: 백엔드 API 연동
-      // return fetchAPI(`/teams/nearby?lat=${lat}&lng=${lng}&all=true`);
+  // Match Request APIs
+  getMatchRequests: () => fetchAPI('/match-requests/received'),
+  getSentMatchRequests: () => fetchAPI('/match-requests/sent'),
+  sendMatchRequest: (toTeamId: string, fromTeamId: string, message: string) =>
+    fetchAPI('/match-requests', {
+      method: 'POST',
+      body: JSON.stringify({ toTeamId, fromTeamId, message }),
+    }),
+  acceptMatchRequest: (requestId: string) =>
+    fetchAPI(`/match-requests/${requestId}/accept`, {
+      method: 'PUT',
+    }),
+  rejectMatchRequest: (requestId: string) =>
+    fetchAPI(`/match-requests/${requestId}/reject`, {
+      method: 'PUT',
+    }),
 
-      // 현재: Mock 데이터 전체 반환
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return mockNearbyTeams;
-    },
-  },
+  // Notification APIs
+  getNotifications: () => fetchAPI('/notifications'),
+  markNotificationAsRead: (notificationId: string) =>
+    fetchAPI(`/notifications/${notificationId}/read`, {
+      method: 'PUT',
+    }),
+  markAllNotificationsAsRead: () =>
+    fetchAPI('/notifications/read-all', {
+      method: 'PUT',
+    }),
+
+  // AI APIs
+  getMatchScore: (userId: string, teamId: string) =>
+    fetchAPI('/ai/match-score', {
+      method: 'POST',
+      body: JSON.stringify({ userId, teamId }),
+    }),
+
+  generateCoachingReport: (gameId: string) =>
+    fetchAPI('/ai/coaching-report', {
+      method: 'POST',
+      body: JSON.stringify({ gameId }),
+    }),
+
+  getRecommendedTeams: (userId: string) =>
+    fetchAPI(`/ai/recommend-teams?userId=${userId}`),
 };
