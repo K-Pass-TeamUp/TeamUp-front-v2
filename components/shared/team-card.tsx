@@ -36,7 +36,7 @@ export function TeamCard({ team, actionButton, showMatchScore = true }: TeamCard
                   레벨 {team.level}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
-                  {team.memberCount}/{team.maxMembers}명
+                  {team.memberCount}명
                 </span>
               </div>
             </div>
