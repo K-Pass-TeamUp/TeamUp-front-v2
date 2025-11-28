@@ -142,22 +142,27 @@ export default function MapPage() {
                           <p><span className="text-muted-foreground">장소:</span> {team.location}</p>
                         </div>
 
-                        {team.isOfficial ? (
-                          <Button
-                            className="w-full font-semibold mt-3"
-                            onClick={() => handleMatchRequest(team)}
-                          >
-                            매칭하기
-                          </Button>
-                        ) : (
-                          <Button
-                            className="w-full font-semibold mt-3 bg-[#181B1F] hover:bg-[#181B1F]/90 text-white"
-                            onClick={() => handleJoinTeam(team.name)}
-                          >
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            팀 참여하기
-                          </Button>
-                        )}
+                        <div className="flex flex-col gap-2 mt-3">
+                          {team.isOfficial ? (
+                            <Button
+                              className="w-full font-semibold bg-[#181B1F] text-white hover:bg-[#FF6F1C] hover:text-black transition-colors"
+                              onClick={() => handleMatchRequest(team)}
+                            >
+                              매칭하기
+                            </Button>
+                          ) : (
+                            <Button
+                              className="w-full font-semibold bg-[#181B1F] hover:bg-[#181B1F]/90 text-white"
+                              onClick={() => handleJoinTeam(team.name)}
+                            >
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              팀 참여하기
+                            </Button>
+                          )}
+                          <Link href={`/team/${team.name}`} className="w-full">
+                            <Button variant="default" className="w-full">상세 보기</Button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

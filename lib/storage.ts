@@ -181,7 +181,7 @@ export const initMockData = (): void => {
     memberCount: 6,
     maxMembers: 10,
     level: 'A',
-    region: '세종시',
+    region: '광진구 능동',
     totalGames: 18,
     aiReports: 14,
     activeDays: 45,
