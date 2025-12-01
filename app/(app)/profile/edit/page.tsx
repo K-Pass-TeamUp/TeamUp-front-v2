@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Save } from 'lucide-react'
 import { getCurrentUser, updateCurrentUser } from '@/lib/storage'
-import { Position, PlayStyle, SkillLevel, CardSkin, User } from '@/types'
+import { Position, PlayStyle, User } from '@/types'
 import { PlayerCard } from '@/components/shared/PlayerCard'
 
 export default function ProfileEditPage() {
@@ -23,8 +23,6 @@ export default function ProfileEditPage() {
     position: '' as Position | '',
     subPosition: '' as Position | '',
     playStyle: '' as PlayStyle | '',
-    skillLevel: '' as SkillLevel | '',
-    cardSkin: 'DEFAULT' as CardSkin,
     statusMsg: ''
   })
 
@@ -38,8 +36,6 @@ export default function ProfileEditPage() {
         position: userData.position || '' as Position | '',
         subPosition: userData.subPosition || '' as Position | '',
         playStyle: userData.playStyle || '' as PlayStyle | '',
-        skillLevel: userData.skillLevel || '' as SkillLevel | '',
-        cardSkin: userData.cardSkin || 'DEFAULT' as CardSkin,
         statusMsg: userData.statusMsg || ''
       })
     }
@@ -52,7 +48,6 @@ export default function ProfileEditPage() {
     position: formData.position || undefined,
     subPosition: formData.subPosition || undefined,
     playStyle: formData.playStyle || undefined,
-    skillLevel: formData.skillLevel || undefined,
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,8 +61,6 @@ export default function ProfileEditPage() {
         position: formData.position || undefined,
         subPosition: formData.subPosition || undefined,
         playStyle: formData.playStyle || undefined,
-        skillLevel: formData.skillLevel || undefined,
-        cardSkin: formData.cardSkin,
         statusMsg: formData.statusMsg || undefined
       })
 
@@ -148,8 +141,10 @@ export default function ProfileEditPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">선택하세요</option>
-                  <option value="G">가드 (G)</option>
-                  <option value="F">포워드 (F)</option>
+                  <option value="PG">포인트 가드 (PG)</option>
+                  <option value="SG">슈팅 가드 (SG)</option>
+                  <option value="SF">스몰 포워드 (SF)</option>
+                  <option value="PF">파워 포워드 (PF)</option>
                   <option value="C">센터 (C)</option>
                 </select>
               </div>
@@ -164,8 +159,10 @@ export default function ProfileEditPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">선택하세요</option>
-                  <option value="G">가드 (G)</option>
-                  <option value="F">포워드 (F)</option>
+                  <option value="PG">포인트 가드 (PG)</option>
+                  <option value="SG">슈팅 가드 (SG)</option>
+                  <option value="SF">스몰 포워드 (SF)</option>
+                  <option value="PF">파워 포워드 (PF)</option>
                   <option value="C">센터 (C)</option>
                 </select>
               </div>
@@ -194,52 +191,18 @@ export default function ProfileEditPage() {
                   <option value="PA">패스형 (Passer)</option>
                 </select>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="skillLevel">실력 수준</Label>
-                <select
-                  id="skillLevel"
-                  value={formData.skillLevel}
-                  onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as SkillLevel | '' })}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <option value="">선택하세요</option>
-                  <option value="ROOKIE">입문 (10점)</option>
-                  <option value="BEGINNER">초보 (30점)</option>
-                  <option value="INTERMEDIATE">중수 (50점)</option>
-                  <option value="ADVANCED">고수 (70점)</option>
-                  <option value="PRO">선출 (90점)</option>
-                </select>
-              </div>
             </CardContent>
           </Card>
 
           {/* 카드 디자인 */}
           <Card>
             <CardHeader>
-              <CardTitle>카드 디자인</CardTitle>
-              <CardDescription>카드의 등급과 한 줄 각오를 설정하세요</CardDescription>
+              <CardTitle>한 줄 소개</CardTitle>
+              <CardDescription>나만의 한 줄 각오를 입력하세요</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="cardSkin">카드 등급</Label>
-                <select
-                  id="cardSkin"
-                  value={formData.cardSkin}
-                  onChange={(e) => setFormData({ ...formData, cardSkin: e.target.value as CardSkin })}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <option value="DEFAULT">기본 (실버)</option>
-                  <option value="GOLD">골드 ⭐</option>
-                  <option value="RARE">레어 💎</option>
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  * 골드/레어 등급은 활동량에 따라 자동으로 업그레이드됩니다
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="statusMsg">한 줄 각오 (20자 이내)</Label>
+                <Label htmlFor="statusMsg">한 줄 소개 (20자 이내)</Label>
                 <Textarea
                   id="statusMsg"
                   value={formData.statusMsg}
@@ -250,6 +213,11 @@ export default function ProfileEditPage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   {formData.statusMsg.length}/20자
+                </p>
+              </div>
+              <div className="rounded-lg bg-muted p-3">
+                <p className="text-xs text-muted-foreground">
+                  💡 카드 색상은 선택한 주 포지션에 따라 자동으로 변경됩니다
                 </p>
               </div>
             </CardContent>

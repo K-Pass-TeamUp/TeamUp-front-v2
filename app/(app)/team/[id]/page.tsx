@@ -38,11 +38,11 @@ const DNA_INFO: Record<TeamDNA, { name: string; icon: typeof Shield; color: stri
 
 // Mock 팀원 데이터 (실제로는 API에서 가져와야 함)
 const mockTeamMembers = [
-  { name: '김철수', position: '포워드', isLeader: true, kakaoId: 'captain_kim_123' },
-  { name: '이영희', position: '가드', isLeader: false, kakaoId: 'lee_younghee' },
-  { name: '박민수', position: '센터', isLeader: false, kakaoId: 'park_minsu' },
-  { name: '최지원', position: '가드', isLeader: false, kakaoId: 'choi_jiwon' },
-  { name: '정태영', position: '포워드', isLeader: false, kakaoId: 'jung_taeyoung' },
+  { name: '김철수', position: 'SF', isLeader: true, kakaoId: 'captain_kim_123' },
+  { name: '이영희', position: 'PG', isLeader: false, kakaoId: 'lee_younghee' },
+  { name: '박민수', position: 'C', isLeader: false, kakaoId: 'park_minsu' },
+  { name: '최지원', position: 'SG', isLeader: false, kakaoId: 'choi_jiwon' },
+  { name: '정태영', position: 'PF', isLeader: false, kakaoId: 'jung_taeyoung' },
 ]
 
 export default function TeamDetailPage() {
@@ -82,6 +82,9 @@ export default function TeamDetailPage() {
   const [isTeamLeader, setIsTeamLeader] = useState(false)
 
   useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window === 'undefined') return
+
     // TODO: 실제 API로 팀 데이터 로드
     // const fetchTeam = async () => {
     //   try {
@@ -113,7 +116,7 @@ export default function TeamDetailPage() {
           }
 
           // 현재 유저가 이 팀의 멤버인지 확인
-          const currentTeamId = appData.user?.currentTeamId
+          const currentTeamId = appData.user?.team?.id
           setIsTeamMember(currentTeamId === teamId)
           setIsTeamLeader(foundTeam.captainId === appData.user?.id)
         } else {

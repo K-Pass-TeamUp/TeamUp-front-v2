@@ -57,10 +57,10 @@ export interface Activity {
 }
 
 // Player Card Types (FIFA Style)
-export type Position = 'G' | 'F' | 'C'; // Guard / Forward / Center
+export type Position = 'PG' | 'SG' | 'SF' | 'PF' | 'C'; // Point Guard / Shooting Guard / Small Forward / Power Forward / Center
 export type PlayStyle = 'SL' | 'SH' | 'DF' | 'PA'; // Slasher / Shooter / Defender / Passer
 export type SkillLevel = 'ROOKIE' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'PRO';
-export type CardSkin = 'DEFAULT' | 'GOLD' | 'RARE';
+export type CardSkin = 'PG_BLUE' | 'SG_CYAN' | 'SF_GREEN' | 'PF_ORANGE' | 'C_PURPLE';
 
 // Skill Level 점수 매핑
 export const SKILL_LEVEL_SCORES: Record<SkillLevel, number> = {
@@ -77,15 +77,14 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  teams: Team[]; // 여러 팀 소속 가능
-  currentTeamId?: string; // 현재 활성화된 팀
+  team?: Team; // 한 팀만 소속 가능 (optional - 팀이 없을 수도 있음)
 
   // Player Card 정보 (FIFA 스타일)
   height?: number; // 키 (cm)
   position?: Position; // 주 포지션
   subPosition?: Position; // 부 포지션
   playStyle?: PlayStyle; // 플레이 스타일
-  skillLevel?: SkillLevel; // 실력 수준
+  skillLevel?: SkillLevel; // @deprecated - 더 이상 사용하지 않음 (UI에서 제거됨)
   cardSkin?: CardSkin; // 카드 디자인 등급
   statusMsg?: string; // 한 줄 각오 (20자 이내)
 }
