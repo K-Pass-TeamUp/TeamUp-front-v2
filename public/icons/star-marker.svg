@@ -1,0 +1,15 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- base pin -->
+  <path d="M36 4C22 4 11 15 11 29C11 46 30 60 35 64C35.6 64.5 36.4 64.5 37 64C42 60 61 46 61 29C61 15 50 4 36 4Z"
+        fill="#FFC107" stroke="#FFA000" stroke-width="3" filter="url(#shadow)"/>
+
+  <!-- improved star -->
+  <path d="M36 20L39.5 28.5H48L41 33.8L44 42L36 37L28 42L31 33.8L24 28.5H32.5L36 20Z"
+        fill="white" stroke="#F57F17" stroke-width="1.5"/>
+</svg>
