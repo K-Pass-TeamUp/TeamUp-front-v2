@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { ArrowLeft, MessageCircle, Sparkles, CheckCircle, Settings, LogOut, Crown, Copy, Check, X, TrendingUp, Target, Lightbulb, Users, UserPlus, Shield, Zap, Users2 } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Sparkles, Settings, LogOut, Crown, Copy, Check, X, Users, UserPlus, Shield, Zap, Users2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Team, TeamDNA } from '@/types'
 
@@ -56,9 +56,6 @@ export default function TeamDetailPage() {
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState<string | null>(null)
-  const [showCompleteModal, setShowCompleteModal] = useState(false)
-  const [showSurveyModal, setShowSurveyModal] = useState(false)
-  const [showCoachingModal, setShowCoachingModal] = useState(false)
   const [showTeamSettingsModal, setShowTeamSettingsModal] = useState(false)
   const [showLeaveTeamModal, setShowLeaveTeamModal] = useState(false)
   const [showJoinRequestModal, setShowJoinRequestModal] = useState(false)
@@ -66,18 +63,8 @@ export default function TeamDetailPage() {
   const [selectedMember, setSelectedMember] = useState<typeof mockTeamMembers[0] | null>(null)
   const [teamName, setTeamName] = useState('')
   const [teamPhoto, setTeamPhoto] = useState('')
-
-  const [surveyData, setSurveyData] = useState({
-    opponent: '',
-    result: '',
-    difficulty: '',
-    teamwork: '',
-    tempo: '',
-    strength: '',
-    improvement: '',
-    weakness: [] as string[],
-    comment: ''
-  })
+  const [teamDna, setTeamDna] = useState<TeamDNA>('BULLS')
+  const [teamDescription, setTeamDescription] = useState('')
 
   // 현재 유저가 팀 멤버인지 확인 (Mock)
   const [isTeamMember, setIsTeamMember] = useState(false)
@@ -115,6 +102,16 @@ export default function TeamDetailPage() {
           // 팀 사진도 로드 (logo 필드에서)
           if (foundTeam.logo) {
             setTeamPhoto(foundTeam.logo)
+          }
+
+          // 팀 DNA 로드
+          if (foundTeam.teamDna) {
+            setTeamDna(foundTeam.teamDna)
+          }
+
+          // 팀 소개 로드
+          if (foundTeam.description) {
+            setTeamDescription(foundTeam.description)
           }
 
           // 현재 유저가 이 팀의 멤버인지 확인
@@ -179,21 +176,6 @@ export default function TeamDetailPage() {
     } catch (err) {
       toast.error('복사에 실패했습니다.')
     }
-  }
-
-  const handleStartCompletion = () => {
-    setShowCompleteModal(true)
-  }
-
-  const handleConfirmComplete = () => {
-    setShowCompleteModal(false)
-    setShowSurveyModal(true)
-  }
-
-  const handleSubmitSurvey = () => {
-    // TODO: 실제 백엔드 API 호출
-    setShowSurveyModal(false)
-    setShowCoachingModal(true)
   }
 
   const handleLeaveTeam = async () => {
@@ -363,18 +345,6 @@ export default function TeamDetailPage() {
           >
             <UserPlus className="mr-2 h-5 w-5" />
             팀 참여 요청하기
-          </Button>
-        )}
-
-        {/* 팀 멤버인 경우: 경기 완료 버튼 */}
-        {isTeamMember && (
-          <Button
-            onClick={handleStartCompletion}
-            className="mb-6 w-full font-semibold shadow-lg shadow-primary/20"
-            size="lg"
-          >
-            <CheckCircle className="mr-2 h-5 w-5" />
-            경기 완료하기
           </Button>
         )}
 
@@ -561,9 +531,11 @@ export default function TeamDetailPage() {
                   if (team) {
                     setTeamName(team.name)
                     // 팀 사진도 team.logo에서 로드
-                    if (team.logo) {
-                      setTeamPhoto(team.logo)
-                    }
+                    setTeamPhoto(team.logo || '')
+                    // 팀 DNA 로드
+                    setTeamDna(team.teamDna || 'BULLS')
+                    // 팀 소개 로드
+                    setTeamDescription(team.description || '')
                   }
                   setShowTeamSettingsModal(true)
                 }}
@@ -618,268 +590,10 @@ export default function TeamDetailPage() {
         </div>
       )}
 
-      {/* Complete Match Modal */}
-      {showCompleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <Card className="w-full max-w-sm border-border/50 bg-card">
-            <CardContent className="p-6">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <CheckCircle className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="mb-2 text-xl font-bold text-foreground">경기 완료 처리</h3>
-              <p className="mb-6 text-sm text-muted-foreground">
-                경기 완료로 처리할까요?<br />
-                팀원 중 누구라도 누르면 경기 전체가 종료됩니다.
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowCompleteModal(false)}
-                >
-                  취소
-                </Button>
-                <Button
-                  className="flex-1"
-                  onClick={handleConfirmComplete}
-                >
-                  경기 완료
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Survey Modal */}
-      {showSurveyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <div className="mx-auto w-full max-w-lg max-h-[80vh] overflow-y-auto">
-            <Card className="border-border/50 bg-card">
-              <CardContent className="p-6">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground">AI 코칭 설문</h3>
-                    <p className="text-sm text-muted-foreground">경기 피드백을 입력해주세요</p>
-                  </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setShowSurveyModal(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                <div className="space-y-6">
-                  {/* 상대팀 이름 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      상대팀 이름
-                    </label>
-                    <Input
-                      placeholder="예: 강남 Warriors"
-                      value={surveyData.opponent}
-                      onChange={(e) => setSurveyData({ ...surveyData, opponent: e.target.value })}
-                      className="h-11"
-                    />
-                  </div>
-
-                  {/* 경기 결과 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      경기 결과
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['승리', '패배'].map((option) => (
-                        <Button
-                          key={option}
-                          variant={surveyData.result === option ? 'default' : 'outline'}
-                          onClick={() => setSurveyData({ ...surveyData, result: option })}
-                          className="w-full"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 난이도 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      오늘 경기 난이도는 어땠나요?
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {['쉬움', '보통', '어려움'].map((option) => (
-                        <Button
-                          key={option}
-                          variant={surveyData.difficulty === option ? 'default' : 'outline'}
-                          onClick={() => setSurveyData({ ...surveyData, difficulty: option })}
-                          className="w-full"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 팀워크 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      팀워크는 어땠나요?
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {['좋음', '보통', '부족'].map((option) => (
-                        <Button
-                          key={option}
-                          variant={surveyData.teamwork === option ? 'default' : 'outline'}
-                          onClick={() => setSurveyData({ ...surveyData, teamwork: option })}
-                          className="w-full"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 강점 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      우리 팀의 강점은?
-                    </label>
-                    <textarea
-                      value={surveyData.strength}
-                      onChange={(e) => setSurveyData({ ...surveyData, strength: e.target.value })}
-                      placeholder="예: 패스가 잘 연결됨, 빠른 공격 전환 등"
-                      className="h-20 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-
-                  {/* 보완점 */}
-                  <div>
-                    <label className="mb-3 block text-sm font-semibold text-foreground">
-                      보완해야 할 점은?
-                    </label>
-                    <textarea
-                      value={surveyData.improvement}
-                      onChange={(e) => setSurveyData({ ...surveyData, improvement: e.target.value })}
-                      placeholder="예: 리바운드 약함, 수비 소통 부족 등"
-                      className="h-20 w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
-
-                  <Button
-                    className="w-full font-semibold"
-                    size="lg"
-                    onClick={handleSubmitSurvey}
-                  >
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    AI 코칭 생성하기
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Coaching Modal */}
-      {showCoachingModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <div className="mx-auto w-full max-w-lg max-h-[80vh] overflow-y-auto">
-            <Card className="border-border/50 bg-card">
-              <CardContent className="p-6">
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground">AI 코칭 리포트</h3>
-                      <p className="text-sm text-muted-foreground">오늘 경기 분석</p>
-                    </div>
-                  </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setShowCoachingModal(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-xl bg-primary/5 p-4">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                      오늘 경기 총평
-                    </p>
-                    <p className="text-sm text-foreground">
-                      팀원 간의 호흡이 좋았으며, 공격적인 플레이가 돋보였습니다.
-                      다만 체력 관리와 수비 리바운드 개선이 필요해 보입니다.
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-primary" />
-                      <p className="text-sm font-semibold text-foreground">강점</p>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="rounded-lg bg-secondary/30 p-3">
-                        <p className="text-sm text-foreground">• 빠른 공격 전환과 팀워크</p>
-                      </div>
-                      <div className="rounded-lg bg-secondary/30 p-3">
-                        <p className="text-sm text-foreground">• 패스 정확도가 우수함</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center gap-2">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      <p className="text-sm font-semibold text-foreground">약점</p>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="rounded-lg bg-secondary/30 p-3">
-                        <p className="text-sm text-foreground">• 수비 리바운드 강화 필요</p>
-                      </div>
-                      <div className="rounded-lg bg-secondary/30 p-3">
-                        <p className="text-sm text-foreground">• 후반 체력 관리 개선 필요</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4 text-primary" />
-                      <p className="text-sm font-semibold text-foreground">다음 경기 추천 전략</p>
-                    </div>
-                    <div className="rounded-lg bg-primary/5 p-3">
-                      <p className="text-sm text-foreground">
-                        리바운드 포지셔닝 연습과 지구력 훈련을 병행하면
-                        다음 경기에서 더 좋은 결과를 얻을 수 있습니다.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    className="w-full font-semibold"
-                    size="lg"
-                    onClick={() => setShowCoachingModal(false)}
-                  >
-                    닫기
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
       {/* Team Settings Modal */}
       {showTeamSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <Card className="w-full max-w-md border-border/50 bg-card">
+          <Card className="w-full max-w-md max-h-[85vh] overflow-y-auto border-border/50 bg-card">
             <CardContent className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
@@ -941,6 +655,67 @@ export default function TeamDetailPage() {
                   />
                 </div>
 
+                {/* Team DNA */}
+                <div>
+                  <label className="mb-3 block text-sm font-semibold text-foreground">
+                    팀 DNA (AI 코치 스타일)
+                  </label>
+                  <div className="grid gap-2">
+                    {(Object.keys(DNA_INFO) as TeamDNA[]).map((dna) => {
+                      const DnaIcon = DNA_INFO[dna].icon
+                      const isSelected = teamDna === dna
+                      return (
+                        <Card
+                          key={dna}
+                          className={`cursor-pointer border-2 transition-all ${
+                            isSelected
+                              ? `${DNA_INFO[dna].color.replace('text-', 'border-')} ${DNA_INFO[dna].bgColor}`
+                              : 'border-border/50 hover:border-border'
+                          }`}
+                          onClick={() => setTeamDna(dna)}
+                        >
+                          <CardContent className="p-3">
+                            <div className="flex items-center gap-3">
+                              <DnaIcon className={`h-5 w-5 ${DNA_INFO[dna].color}`} />
+                              <div className="flex-1">
+                                <p className={`text-sm font-semibold ${isSelected ? DNA_INFO[dna].color : 'text-foreground'}`}>
+                                  {DNA_INFO[dna].name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {DNA_INFO[dna].description}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Team Description */}
+                <div>
+                  <div className="mb-3 flex items-center justify-between">
+                    <label className="text-sm font-semibold text-foreground">
+                      팀 소개
+                    </label>
+                    <span className="text-xs text-muted-foreground">
+                      {teamDescription.length}/30
+                    </span>
+                  </div>
+                  <textarea
+                    value={teamDescription}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value.length <= 30) {
+                        setTeamDescription(value)
+                      }
+                    }}
+                    placeholder="팀을 소개하는 문구를 입력하세요 (최대 30자)"
+                    className="h-16 w-full resize-none rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
                 <Button
                   className="w-full font-semibold"
                   size="lg"
@@ -951,7 +726,7 @@ export default function TeamDetailPage() {
                       localStorage.setItem('teamPhoto', teamPhoto)
                     }
 
-                    // teamup_app_data에도 팀 정보 업데이트 (이름과 사진 모두)
+                    // teamup_app_data에도 팀 정보 업데이트 (이름, 사진, DNA, 소개 모두)
                     const appDataStr = localStorage.getItem('teamup_app_data')
                     if (appDataStr) {
                       const appData = JSON.parse(appDataStr)
@@ -960,18 +735,22 @@ export default function TeamDetailPage() {
                         appData.teams[teamIndex] = {
                           ...appData.teams[teamIndex],
                           name: teamName,
-                          logo: teamPhoto || appData.teams[teamIndex].logo
+                          logo: teamPhoto || appData.teams[teamIndex].logo,
+                          teamDna: teamDna,
+                          description: teamDescription
                         }
                         localStorage.setItem('teamup_app_data', JSON.stringify(appData))
                       }
                     }
 
-                    // 현재 페이지의 team 상태도 업데이트 (이름과 사진 모두)
+                    // 현재 페이지의 team 상태도 업데이트 (이름, 사진, DNA, 소개 모두)
                     if (team) {
                       setTeam({
                         ...team,
                         name: teamName,
-                        logo: teamPhoto || team.logo
+                        logo: teamPhoto || team.logo,
+                        teamDna: teamDna,
+                        description: teamDescription
                       })
                     }
 
