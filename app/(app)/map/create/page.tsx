@@ -37,7 +37,7 @@ export default function CreatePostPage() {
   // 날짜/시간 포맷팅
   const formatDateTime = () => {
     if (!selectedDate || !selectedHour || !selectedMinute) {
-      return '경기 시간을 선택하세요'
+      return '경기 날짜와 시간을 선택하세요'
     }
     const year = selectedDate.getFullYear()
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
@@ -172,10 +172,13 @@ export default function CreatePostPage() {
       <main className="mx-auto max-w-lg px-4 py-6 space-y-6">
         {/* 안내 문구 */}
         <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4">
-          <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
-            작성 후 수정 불가능하니 신중히 작성해주세요.<br />
-            삭제는 마이페이지에서 가능합니다.
-          </p>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">⚠️</span>
+            <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+              작성 후 수정 불가능하니 신중히 작성해주세요.<br />
+              삭제는 마이페이지에서 가능합니다.
+            </p>
+          </div>
         </div>
 
         {/* 경기 정보 입력 */}
@@ -274,7 +277,7 @@ export default function CreatePostPage() {
               maxLength={30}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              {description.length}/30 (비워두면 기본 제목이 표시됩니다)
+              {description.length}/30 (비워두면 예시 제목이 표시됩니다)
             </p>
           </div>
 
