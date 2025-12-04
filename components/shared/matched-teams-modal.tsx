@@ -51,7 +51,7 @@ export function MatchedTeamsModal({ open, onOpenChange, matchedTeams }: MatchedT
                         상세 보기
                       </Button>
                     </Link>
-                    <Link href="/coaching/create" className="flex-1">
+                    <Link href={`/coaching/create?matchedTeamId=${matched.id}`} className="flex-1">
                       <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                         경기 완료하기
                       </Button>
