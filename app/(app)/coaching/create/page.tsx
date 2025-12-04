@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Trophy, TrendingDown, Minus, Sparkles, Calendar as CalendarIcon, Bot } from 'lucide-react'
-import { getCurrentUser, addGameRecord } from '@/lib/storage'
+import { getCurrentUser, addGameRecord, getAppData, setAppData } from '@/lib/storage'
 import { BasketballCourt } from '@/components/features/coaching/basketball-court'
 import { PositionFeedbackModal } from '@/components/features/coaching/position-feedback-modal'
 import { CalendarModal } from '@/components/shared/calendar-modal'
@@ -34,11 +34,13 @@ function generateMockAIFeedback(
 
 export default function CreateCoachingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
   const [opponent, setOpponent] = useState('')
   const [gameDate, setGameDate] = useState<Date>(new Date())
   const [result, setResult] = useState<GameResult | null>(null)
+  const [matchedTeamId, setMatchedTeamId] = useState<string | null>(null)
 
   // DNA별 색상 스타일
   const getDnaStyle = (dna?: string) => {
@@ -90,7 +92,13 @@ export default function CreateCoachingPage() {
     }
 
     setCurrentTeam(user.team || null)
-  }, [router])
+
+    // URL에서 matchedTeamId 가져오기
+    const matchedId = searchParams.get('matchedTeamId')
+    if (matchedId) {
+      setMatchedTeamId(matchedId)
+    }
+  }, [router, searchParams])
 
   const handlePositionClick = (positionId: number, positionLabel: string) => {
     setSelectedPosition(positionId)
@@ -132,6 +140,13 @@ export default function CreateCoachingPage() {
     }
 
     addGameRecord(newRecord)
+
+    // 매칭된 팀 경기를 완료한 경우 해당 매칭 제거
+    if (matchedTeamId) {
+      const appData = getAppData()
+      appData.matchedTeams = appData.matchedTeams.filter(m => m.id !== matchedTeamId)
+      setAppData(appData)
+    }
 
     // 상세 페이지로 이동
     router.push(`/coaching/${newRecord.id}`)
@@ -195,7 +210,7 @@ export default function CreateCoachingPage() {
                 상대팀 이름
               </label>
               <Input
-                placeholder="예: 강서 Rockets"
+                placeholder="예: 세종 Twins"
                 value={opponent}
                 onChange={(e) => setOpponent(e.target.value)}
                 className="border-border/50 shadow-none"
