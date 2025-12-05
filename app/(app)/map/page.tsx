@@ -14,6 +14,7 @@ import type { Post, Team } from '@/types'
 import KakaoMap, { type MarkerData } from '@/components/shared/KakaoMap'
 import { mockMatchTeams } from '@/lib/mock-data'
 import { toast } from 'sonner'
+import KakaoMapDebugLoader from '@/components/shared/KakaoMapDebugLoader'
 
 // 용병 모집 글
 const mockGuestPosts: Post[] = [
@@ -326,6 +327,7 @@ export default function MapPage() {
 
   return (
     <>
+      <KakaoMapDebugLoader />
       <div className="min-h-screen bg-background pb-20">
         {/* Header */}
         <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg">
