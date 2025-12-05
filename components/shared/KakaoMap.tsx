@@ -87,8 +87,9 @@ export default function KakaoMap({
             position={center}
             image={{
               src: '/icons/user-location-marker.svg',
-              size: { width: 32, height: 32 }
+              size: { width: 40, height: 40 }
             }}
+            zIndex={100}
           />
         )}
 

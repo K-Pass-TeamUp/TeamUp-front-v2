@@ -26,10 +26,10 @@ const mockGuestPosts: Post[] = [
     longitude: 127.0436,
     gameTime: '2025-12-10 18:30',
     location: '서울 성동구 왕십리로 206',
-    kakaoLink: 'https://open.kakao.com/o/example1',
+    kakaoLink: 'https://open.kakao.com/o/gY3nWG4h',
     description: '저녁에 게임 하실 분!',
     additionalDescription: '퇴근 후 가볍게 땀 흘려요. 레벨 상관없이 모두 환영합니다!',
-    createdAt: '2025-12-05 14:30',
+    createdAt: '2025-12-09 14:30',
     distance: 0.8
   },
   {
@@ -44,7 +44,7 @@ const mockGuestPosts: Post[] = [
     kakaoLink: 'https://open.kakao.com/o/example2',
     description: '주말 오후 농구 같이 하실 분',
     additionalDescription: '슈터 포지션 분들 많이 들어와 주세요!!',
-    createdAt: '2025-12-05 10:20',
+    createdAt: '2025-12-08 10:20',
     distance: 1.2
   },
   {
@@ -56,10 +56,10 @@ const mockGuestPosts: Post[] = [
     longitude: 127.0740,
     gameTime: '2025-12-01 19:00',
     location: '서울특별시 광진구 능동로 10',
-    kakaoLink: 'https://open.kakao.com/o/example3',
-    description: '포워드 포지션 2명 구합니다!',
-    additionalDescription: '키 180 이상 선호합니다. 실력은 중수 이상이면 좋아요! 주 2회 정기 경기 있습니다.',
-    createdAt: '2025-11-30 10:00',
+    kakaoLink: 'https://open.kakao.com/o/gY3nWG4h',
+    description: '평일 오후 농구 같이 하실 분',
+    additionalDescription: '퇴근 후 가볍게 땀 흘려요. 레벨 상관없이 모두 환영합니다!',
+    createdAt: '2025-12-12 20:00',
     distance: 1.0
   },
   {
@@ -73,7 +73,7 @@ const mockGuestPosts: Post[] = [
     location: '서울 광진구 능동로 216',
     kakaoLink: 'https://open.kakao.com/o/example4',
     description: '센터 포지션 1명 급구합니다',
-    createdAt: '2025-11-30 09:00',
+    createdAt: '2025-12-13 09:00',
     distance: 1.1
   },
 ]
@@ -406,19 +406,19 @@ export default function MapPage() {
               </div>
             </div>
           )}
+
+          {/* 플로팅 버튼 - 모집글 작성 */}
+          <Link href="/map/create">
+            <Button
+              size="lg"
+              className="fixed bottom-24 right-6 z-30 h-14 w-14 rounded-full shadow-lg"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
+          </Link>
         </main>
 
         <BottomNav />
-
-        {/* 플로팅 버튼 - 모집글 작성 */}
-        <Link href="/map/create">
-          <Button
-            size="lg"
-            className="fixed bottom-24 right-6 z-30 h-14 w-14 rounded-full shadow-lg"
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
-        </Link>
 
         {/* 모집글/농구장 상세 모달 */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
