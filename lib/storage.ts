@@ -598,8 +598,8 @@ export const initMockData = (): void => {
       team: mockTeams[0], // 첫 번째 팀을 현재 팀으로 설정
       // Player Card 정보
       height: 178,
-      position: 'PG',
-      playStyle: 'SH',
+      position: 'GUARD',
+      playStyle: 'SHOOTER',
       statusMsg: 'TeamUp 3주 연속 출석 중!',
     },
     teams: mockTeams,

@@ -53,6 +53,7 @@ export default function LoginPage() {
           playStyle: response.playStyle as 'SLASHER' | 'SHOOTER' | 'DEFENDER' | 'PASSER' | undefined,
           height: response.height,
           address: response.address,
+          statusMsg: response.statusMsg,
         },
         teams: [],
         matchRequests: [],
