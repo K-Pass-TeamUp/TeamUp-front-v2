@@ -1,18 +1,73 @@
+// 게임 종료 및 피드백 제출 API 타입
+export interface PositionFeedback {
+  positionNumber: number;
+  tags: string[];
+}
+
+export interface FinishGameFeedbackRequest {
+  teamId: number;
+  result: 'WIN' | 'LOSE' | 'DRAW';
+  positionFeedbacks: PositionFeedback[];
+}
+
+export interface FinishGameFeedbackResponse {
+  gameId: number;
+  teamId: number;
+  teamName: string;
+  result: 'WIN' | 'LOSE' | 'DRAW';
+  positionFeedbacksJson: string;
+  aiComment: string;
+  createdAt: string;
+}
+  
+// 게임 생성 API 타입
+export interface CreateGameRequest {
+  homeTeamId: number;
+  awayTeamId: number;
+}
+
+export interface CreateGameResponse {
+  gameId: number;
+  homeTeamId: number;
+  homeTeamName: string;
+  awayTeamId: number;
+  awayTeamName: string;
+  status: string;
+  createdAt: string;
+}
+// 매칭 추천 팀 조회 API 타입
+export interface MatchSuggestion {
+  teamId: number;
+  name: string;
+  teamDna: string;
+  teamLevel: number;
+  memberCount: number;
+}
+
 // 팀 관련 API
 import { get, post, del } from './client'
-import type { Team } from '@/types'
+import type { Team, TeamMember } from '@/types'
 
-export interface CreateTeamRequest {
-  name: string
-  region: string
-  level: string
-  preferredTime?: string | null
-  playStyle?: string | null
-  gameFrequency?: string | null
-  teamMood?: string | null
-  travelDistance?: string | null
-  maxMembers?: number
-  description?: string
+
+// 실제 API 명세에 맞는 팀 생성 요청 타입
+export interface CreateTeamApiRequest {
+  name: string;
+  teamDna: string;
+  emblemUrl?: string;
+}
+
+// 실제 API 명세에 맞는 팀 생성 응답 타입
+export interface CreateTeamApiResponse {
+  id: number;
+  name: string;
+  leaderId: number;
+  leaderNickname: string;
+  teamDna: string;
+  teamLevel: number;
+  teamExp: number;
+  emblemUrl: string;
+  memberCount: number;
+  createdAt: string;
 }
 
 export interface TeamDetail extends Team {
@@ -21,11 +76,7 @@ export interface TeamDetail extends Team {
     nickname: string
     email: string
   }
-  members: Array<{
-    id: string
-    nickname: string
-    position: string
-  }>
+  members: TeamMember[];
 }
 
 export interface JoinTeamRequest {
@@ -43,6 +94,16 @@ export const teamService = {
     return get<Team>(`/teams/${id}`)
   },
 
+  // 게임 생성 (실제 사용)
+  createGame: async (data: CreateGameRequest): Promise<CreateGameResponse> => {
+    return post<CreateGameResponse>('/api/games/match', data);
+  },
+
+  // 게임 종료 및 피드백 제출 (실제 사용)
+  finishGameAndFeedback: async (gameId: number, data: FinishGameFeedbackRequest): Promise<FinishGameFeedbackResponse> => {
+    return post<FinishGameFeedbackResponse>(`/api/games/${gameId}/finish-and-feedback`, data);
+  },
+
   // 팀 검색
   searchTeams: async (
     query: string,
@@ -56,9 +117,10 @@ export const teamService = {
     return get<Team[]>(`/teams/search?${params}`)
   },
 
-  // 팀 생성
-  createTeam: async (data: CreateTeamRequest): Promise<Team> => {
-    return post<Team>('/teams', data)
+
+  // 실제 API 명세에 맞는 팀 생성 (실제 사용)
+  createTeamApi: async (userId: number, data: CreateTeamApiRequest): Promise<CreateTeamApiResponse> => {
+    return post<CreateTeamApiResponse>(`/api/teams?userId=${userId}`, data)
   },
 
   // 팀 탈퇴
@@ -89,5 +151,10 @@ export const teamService = {
   // 팀장 연락처 조회
   getTeamContact: async (teamId: string): Promise<{ kakaoId: string }> => {
     return get<{ kakaoId: string }>(`/teams/${teamId}/contact`)
+  },
+
+  // 매칭 추천 팀 조회 (실제 사용)
+  getMatchSuggestions: async (teamId: number): Promise<MatchSuggestion[]> => {
+    return get<MatchSuggestion[]>(`/api/teams/${teamId}/match-suggestions`);
   },
 }

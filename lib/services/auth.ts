@@ -1,24 +1,36 @@
 // 인증 관련 API
 import { fetchText, post, setAccessToken, removeAccessToken } from './client'
 
+
 export interface RegisterRequest {
-  email: string
-  nickname: string
-  mainPosition: string
-  subPosition?: string
-  gender: string
-  age: number
-  address: string
+  email: string;
+  password: string;
+  nickname: string;
+  gender: string;
+  address: string;
+  height: number;
+  position: string;
+  subPosition?: string;
+  playStyle?: string;
+  skillLevel?: string;
+  statusMsg?: string;
 }
 
-export interface LoginResponse {
-  accessToken: string
-  refreshToken: string
-  user: {
-    id: string
-    email: string
-    nickname: string
-  }
+
+export interface SignupResponse {
+  id: number;
+  email: string;
+  nickname: string;
+  gender: string;
+  address: string;
+  height: number;
+  position: string;
+  subPosition?: string;
+  playStyle?: string;
+  skillLevel?: string;
+  cardSkin?: string;
+  statusMsg?: string;
+  createdAt: string;
 }
 
 export const authService = {
@@ -41,16 +53,10 @@ export const authService = {
     })
   },
 
-  // 회원가입
-  register: async (data: RegisterRequest): Promise<LoginResponse> => {
-    const response = await post<LoginResponse>('/auth/register', data)
 
-    // 회원가입 성공 시 토큰 저장
-    if (response.accessToken) {
-      setAccessToken(response.accessToken)
-    }
-
-    return response
+  // 회원가입 (실제 사용))
+  signup: async (data: RegisterRequest): Promise<SignupResponse> => {
+    return post<SignupResponse>('/api/auth/signup', data)
   },
 
   // 로그아웃

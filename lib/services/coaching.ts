@@ -1,3 +1,35 @@
+// 게임 종료 및 피드백 제출 API 타입
+export interface PositionFeedback {
+  positionNumber: number;
+  tags: string[];
+}
+
+export interface FinishGameFeedbackRequest {
+  teamId: number;
+  result: 'WIN' | 'LOSE' | 'DRAW';
+  positionFeedbacks: PositionFeedback[];
+}
+
+export interface FinishGameFeedbackResponse {
+  gameId: number;
+  teamId: number;
+  teamName: string;
+  result: 'WIN' | 'LOSE' | 'DRAW';
+  positionFeedbacksJson: string;
+  aiComment: string;
+  createdAt: string;
+}
+
+// AI 리포트 생성 API 타입
+export interface CreateReportResponse {
+  gameId: number;
+  teamId: number;
+  teamName: string;
+  result: 'WIN' | 'LOSE' | 'DRAW';
+  positionFeedbacksJson: string;
+  aiComment: string;
+  createdAt: string;
+}
 // AI 코칭 관련 API
 import { post, get } from './client'
 
@@ -53,5 +85,15 @@ export const coachingService = {
   // 추천 팀 조회
   getRecommendedTeams: async (userId: string): Promise<unknown[]> => {
     return get(`/ai/recommend-teams?userId=${userId}`)
+  },
+
+  // 게임 종료 및 피드백 제출 (실제 사용)
+  finishGameAndFeedback: async (gameId: number, data: FinishGameFeedbackRequest): Promise<FinishGameFeedbackResponse> => {
+    return post<FinishGameFeedbackResponse>(`/api/games/${gameId}/finish-and-feedback`, data);
+  },
+
+  // AI 리포트 생성 (실제 사용)
+  createReport: async (gameId: number, teamId: number): Promise<CreateReportResponse> => {
+    return post<CreateReportResponse>(`/api/games/${gameId}/report?teamId=${teamId}`);
   },
 }
