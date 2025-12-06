@@ -34,34 +34,37 @@ export interface SignupResponse {
 }
 
 export const authService = {
-  // 이메일 인증코드 요청
-  requestEmailVerification: async (email: string): Promise<string> => {
-    return fetchText('/email/verify/request', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    })
-  },
+  // ========== 실제 사용 API ==========
 
-  // 이메일 인증코드 확인
-  confirmEmailVerification: async (
-    email: string,
-    code: string
-  ): Promise<string> => {
-    return fetchText('/email/verify/confirm', {
-      method: 'POST',
-      body: JSON.stringify({ email, code }),
-    })
-  },
-
-
-  // 회원가입 (실제 사용))
+  // 회원가입 (실제 사용)
   signup: async (data: RegisterRequest): Promise<SignupResponse> => {
     return post<SignupResponse>('/api/auth/signup', data)
   },
 
-  // 로그아웃
-  logout: (): void => {
-    removeAccessToken()
-    // localStorage의 다른 데이터도 필요시 정리
-  },
+  // ========== 향후 사용 예정 (주석 처리) ==========
+
+  // // 이메일 인증코드 요청
+  // requestEmailVerification: async (email: string): Promise<string> => {
+  //   return fetchText('/email/verify/request', {
+  //     method: 'POST',
+  //     body: JSON.stringify({ email }),
+  //   })
+  // },
+
+  // // 이메일 인증코드 확인
+  // confirmEmailVerification: async (
+  //   email: string,
+  //   code: string
+  // ): Promise<string> => {
+  //   return fetchText('/email/verify/confirm', {
+  //     method: 'POST',
+  //     body: JSON.stringify({ email, code }),
+  //   })
+  // },
+
+  // // 로그아웃
+  // logout: (): void => {
+  //   removeAccessToken()
+  //   // localStorage의 다른 데이터도 필요시 정리
+  // },
 }

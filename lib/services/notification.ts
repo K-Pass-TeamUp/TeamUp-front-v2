@@ -12,18 +12,23 @@ export interface Notification {
 }
 
 export const notificationService = {
-  // 알림 목록 조회
-  getNotifications: async (): Promise<Notification[]> => {
-    return get<Notification[]>('/notifications')
-  },
+  // ========== 실제 사용 API ==========
+  // (시연에서는 사용 안 함)
 
-  // 알림 읽음 처리
-  markNotificationAsRead: async (notificationId: string): Promise<void> => {
-    return put(`/notifications/${notificationId}/read`)
-  },
+  // ========== 향후 사용 예정 (주석 처리) ==========
 
-  // 모든 알림 읽음 처리
-  markAllNotificationsAsRead: async (): Promise<void> => {
-    return put('/notifications/read-all')
-  },
+  // // 알림 목록 조회
+  // getNotifications: async (): Promise<Notification[]> => {
+  //   return get<Notification[]>('/notifications')
+  // },
+
+  // // 알림 읽음 처리
+  // markNotificationAsRead: async (notificationId: string): Promise<void> => {
+  //   return put(`/notifications/${notificationId}/read`)
+  // },
+
+  // // 모든 알림 읽음 처리
+  // markAllNotificationsAsRead: async (): Promise<void> => {
+  //   return put('/notifications/read-all')
+  // },
 }

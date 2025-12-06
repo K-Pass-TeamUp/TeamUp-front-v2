@@ -63,29 +63,7 @@ export interface MatchScoreResponse {
 }
 
 export const coachingService = {
-  // AI 피드백 생성 (경기 후)
-  generateAIFeedback: async (
-    data: AIFeedbackRequest
-  ): Promise<AIFeedbackResponse> => {
-    return post<AIFeedbackResponse>('/ai/coaching/feedback', data)
-  },
-
-  // 매칭 점수 계산
-  getMatchScore: async (
-    data: MatchScoreRequest
-  ): Promise<MatchScoreResponse> => {
-    return post<MatchScoreResponse>('/ai/match-score', data)
-  },
-
-  // 코칭 레포트 생성
-  generateCoachingReport: async (gameId: string): Promise<unknown> => {
-    return post('/ai/coaching-report', { gameId })
-  },
-
-  // 추천 팀 조회
-  getRecommendedTeams: async (userId: string): Promise<unknown[]> => {
-    return get(`/ai/recommend-teams?userId=${userId}`)
-  },
+  // ========== 실제 사용 API ==========
 
   // 게임 종료 및 피드백 제출 (실제 사용)
   finishGameAndFeedback: async (gameId: number, data: FinishGameFeedbackRequest): Promise<FinishGameFeedbackResponse> => {
@@ -96,4 +74,30 @@ export const coachingService = {
   createReport: async (gameId: number, teamId: number): Promise<CreateReportResponse> => {
     return post<CreateReportResponse>(`/api/games/${gameId}/report?teamId=${teamId}`);
   },
+
+  // ========== 향후 사용 예정 (주석 처리) ==========
+
+  // // AI 피드백 생성 (경기 후)
+  // generateAIFeedback: async (
+  //   data: AIFeedbackRequest
+  // ): Promise<AIFeedbackResponse> => {
+  //   return post<AIFeedbackResponse>('/ai/coaching/feedback', data)
+  // },
+
+  // // 매칭 점수 계산
+  // getMatchScore: async (
+  //   data: MatchScoreRequest
+  // ): Promise<MatchScoreResponse> => {
+  //   return post<MatchScoreResponse>('/ai/match-score', data)
+  // },
+
+  // // 코칭 레포트 생성
+  // generateCoachingReport: async (gameId: string): Promise<unknown> => {
+  //   return post('/ai/coaching-report', { gameId })
+  // },
+
+  // // 추천 팀 조회
+  // getRecommendedTeams: async (userId: string): Promise<unknown[]> => {
+  //   return get(`/ai/recommend-teams?userId=${userId}`)
+  // },
 }
