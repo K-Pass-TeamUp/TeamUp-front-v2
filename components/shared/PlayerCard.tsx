@@ -15,19 +15,17 @@ interface PlayerCardProps {
 
 // 포지션 정보
 const POSITION_INFO: Record<Position, { name: string; color: string }> = {
-  PG: { name: '포인트 가드', color: 'text-blue-500' },
-  SG: { name: '슈팅 가드', color: 'text-cyan-500' },
-  SF: { name: '스몰 포워드', color: 'text-green-500' },
-  PF: { name: '파워 포워드', color: 'text-orange-500' },
-  C: { name: '센터', color: 'text-purple-500' }
+  GUARD: { name: '가드', color: 'text-blue-500' },
+  FORWARD: { name: '포워드', color: 'text-green-500' },
+  CENTER: { name: '센터', color: 'text-purple-500' }
 }
 
 // 플레이 스타일 정보
 const PLAY_STYLE_INFO: Record<PlayStyle, { name: string; icon: typeof Sword; color: string }> = {
-  SL: { name: '돌파형', icon: Sword, color: 'text-red-500' },
-  SH: { name: '슈터형', icon: Target, color: 'text-orange-500' },
-  DF: { name: '수비형', icon: Shield, color: 'text-blue-600' },
-  PA: { name: '패스형', icon: Users, color: 'text-green-600' }
+  SLASHER: { name: '돌파형', icon: Sword, color: 'text-red-500' },
+  SHOOTER: { name: '슈터형', icon: Target, color: 'text-orange-500' },
+  DEFENDER: { name: '수비형', icon: Shield, color: 'text-blue-600' },
+  PASSER: { name: '패스형', icon: Users, color: 'text-green-600' }
 }
 
 export function PlayerCard({ user, currentTeam, showExtendedInfo = false, className = '' }: PlayerCardProps) {
@@ -36,11 +34,9 @@ export function PlayerCard({ user, currentTeam, showExtendedInfo = false, classN
     if (!position) return 'PG_BLUE'
 
     switch (position) {
-      case 'PG': return 'PG_BLUE'
-      case 'SG': return 'SG_CYAN'
-      case 'SF': return 'SF_GREEN'
-      case 'PF': return 'PF_ORANGE'
-      case 'C': return 'C_PURPLE'
+      case 'GUARD': return 'PG_BLUE'
+      case 'FORWARD': return 'SF_GREEN'
+      case 'CENTER': return 'C_PURPLE'
       default: return 'PG_BLUE'
     }
   }

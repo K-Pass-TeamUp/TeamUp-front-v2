@@ -141,11 +141,9 @@ export default function ProfileEditPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">선택하세요</option>
-                  <option value="PG">포인트 가드 (PG)</option>
-                  <option value="SG">슈팅 가드 (SG)</option>
-                  <option value="SF">스몰 포워드 (SF)</option>
-                  <option value="PF">파워 포워드 (PF)</option>
-                  <option value="C">센터 (C)</option>
+                  <option value="GUARD">가드</option>
+                  <option value="FORWARD">포워드</option>
+                  <option value="CENTER">센터</option>
                 </select>
                 {/* 카드 색상 안내 */}
                 <div className="rounded-lg bg-muted p-0">
@@ -165,11 +163,9 @@ export default function ProfileEditPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">선택하세요</option>
-                  <option value="PG">포인트 가드 (PG)</option>
-                  <option value="SG">슈팅 가드 (SG)</option>
-                  <option value="SF">스몰 포워드 (SF)</option>
-                  <option value="PF">파워 포워드 (PF)</option>
-                  <option value="C">센터 (C)</option>
+                  <option value="GUARD">가드</option>
+                  <option value="FORWARD">포워드</option>
+                  <option value="CENTER">센터</option>
                 </select>
                 {/* 안내 문구 */}
                 <p className="text-xs text-muted-foreground">
@@ -195,10 +191,10 @@ export default function ProfileEditPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">선택하세요</option>
-                  <option value="SL">돌파형 (Slasher)</option>
-                  <option value="SH">슈터형 (Shooter)</option>
-                  <option value="DF">수비형 (Defender)</option>
-                  <option value="PA">패스형 (Passer)</option>
+                  <option value="SLASHER">돌파형 (Slasher)</option>
+                  <option value="SHOOTER">슈터형 (Shooter)</option>
+                  <option value="DEFENDER">수비형 (Defender)</option>
+                  <option value="PASSER">패스형 (Passer)</option>
                 </select>
               </div>
             </CardContent>

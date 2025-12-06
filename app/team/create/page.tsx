@@ -10,6 +10,7 @@ import type { TeamCreationData, TeamDNA } from '@/types'
 import { SEOUL_DISTRICTS, DISTRICT_LIST, formatRegion, type DistrictName } from '@/lib/constants'
 import { teamService, type CreateTeamApiRequest } from '@/lib/services'
 import { toast } from 'sonner'
+import { getCurrentUser, setCurrentTeam } from '@/lib/storage'
 
 // 선택 옵션 정의
 const TIME_OPTIONS = [
@@ -170,8 +171,15 @@ export default function CreateTeamPage() {
     }
 
     try {
-      // 실제 백엔드 API 호출
-      const userId = 1 // TODO: 실제 로그인된 유저 ID 가져오기
+      // 로그인된 유저 정보 가져오기
+      const currentUser = getCurrentUser()
+      if (!currentUser) {
+        toast.error('로그인이 필요합니다.')
+        router.push('/login')
+        return
+      }
+
+      const userId = parseInt(currentUser.id)
 
       const createTeamRequest: CreateTeamApiRequest = {
         name: formData.name,
@@ -185,7 +193,7 @@ export default function CreateTeamPage() {
         description: `${response.name} 팀이 생성되었습니다.`,
       })
 
-      // Mock: localStorage에도 팀 추가 (기존 더미 데이터 호환용)
+      // localStorage에 팀 추가 및 현재 팀으로 설정
       const newTeam = {
         id: response.id.toString(),
         name: response.name,
@@ -198,7 +206,7 @@ export default function CreateTeamPage() {
         aiReports: 0,
         activeDays: 0,
         isOfficial: false,
-        captainId: response.leaderId.toString(),
+        captainId: currentUser.id, // 현재 로그인한 사용자가 팀장
         description: formData.description || '',
         matchScore: 0,
         preferredTime: formData.preferredTime,
@@ -213,15 +221,21 @@ export default function CreateTeamPage() {
 
       const existingDataStr = localStorage.getItem('teamup_app_data')
       const appData = existingDataStr ? JSON.parse(existingDataStr) : {
-        user: { id: 'user1', name: '사용자' },
+        user: currentUser,
         teams: [],
-        matchRequests: []
+        matchRequests: [],
+        matchedTeams: [],
+        joinRequests: [],
+        gameRecords: [],
       }
 
+      // 팀 목록에 추가
       appData.teams.push(newTeam)
-      appData.user.team = newTeam
 
       localStorage.setItem('teamup_app_data', JSON.stringify(appData))
+
+      // 현재 팀으로 설정 (팀장으로 자동 설정됨)
+      setCurrentTeam(newTeam.id)
 
       // 성공 모달 표시
       setShowSuccessModal(true)
@@ -266,24 +280,6 @@ export default function CreateTeamPage() {
                 placeholder="예: 세종 Warriors"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-
-            {/* 팀 설명 */}
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">
-                팀 설명 <span className="text-xs font-normal text-muted-foreground">(선택)</span>
-                <span className="ml-2 text-xs font-normal text-muted-foreground">
-                  ({(formData.description || '').length}/30자)
-                </span>
-              </label>
-              <input
-                type="text"
-                placeholder="예: 주말 오후에 활동하는 친목 위주 팀입니다."
-                maxLength={30}
-                value={formData.description || ''}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full rounded-lg border border-border bg-secondary/30 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
