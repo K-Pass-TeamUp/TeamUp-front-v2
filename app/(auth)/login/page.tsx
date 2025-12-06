@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
-import { authService } from '@/lib/services'
+import { authService, userService } from '@/lib/services'
 import { setAppData } from '@/lib/storage'
+import type { Team } from '@/types'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -43,7 +44,37 @@ export default function LoginPage() {
     try {
       const response = await authService.login({ email, password })
 
-      // 로그인 성공 - 사용자 정보 저장
+      // 사용자의 팀 목록 조회
+      let userTeams: Team[] = [];
+      try {
+        const teamsResponse = await userService.getUserTeams(response.id)
+
+        // API 응답을 프론트엔드 Team 타입으로 변환
+        userTeams = teamsResponse.map(team => ({
+          id: team.id.toString(),
+          name: team.name,
+          shortName: team.name.substring(0, 2).toUpperCase(),
+          memberCount: team.memberCount,
+          maxMembers: 10, // 기본값 (API에 없음)
+          level: 'B' as const, // 기본값 (API에 없음)
+          region: '', // 기본값 (API에 없음)
+          totalGames: 0,
+          aiReports: 0,
+          activeDays: 0,
+          isOfficial: team.memberCount >= 5,
+          captainId: team.leaderId.toString(),
+          description: '',
+          matchScore: 0,
+          teamDna: team.teamDna,
+          teamLevel: team.teamLevel,
+          teamExp: team.teamExp,
+        }))
+      } catch (teamErr) {
+        console.error('팀 목록 조회 실패:', teamErr)
+        // 팀 목록 조회 실패해도 로그인은 성공으로 처리
+      }
+
+      // 로그인 성공 - 사용자 정보 및 팀 목록 저장
       setAppData({
         user: {
           id: response.id.toString(),
@@ -55,7 +86,7 @@ export default function LoginPage() {
           address: response.address,
           statusMsg: response.statusMsg,
         },
-        teams: [],
+        teams: userTeams,
         matchRequests: [],
         matchedTeams: [],
         joinRequests: [],

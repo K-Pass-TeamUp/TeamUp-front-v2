@@ -18,9 +18,26 @@ export interface User {
   createdAt: string
 }
 
+export interface UserTeamResponse {
+  id: number
+  name: string
+  leaderId: number
+  leaderNickname: string
+  teamDna: 'BULLS' | 'WARRIORS' | 'SPURS'
+  teamLevel: number
+  teamExp: number
+  emblemUrl?: string
+  memberCount: number
+  createdAt: string
+}
+
 export const userService = {
   // ========== 실제 사용 API ==========
-  // (시연에서는 사용 안 함)
+
+  // 사용자의 팀 목록 조회
+  getUserTeams: async (userId: number): Promise<UserTeamResponse[]> => {
+    return get<UserTeamResponse[]>(`/api/users/${userId}/teams`)
+  },
 
   // ========== 향후 사용 예정 (주석 처리) ==========
 
