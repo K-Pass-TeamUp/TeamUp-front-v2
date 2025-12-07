@@ -193,7 +193,7 @@ export default function TeamDetailPage() {
     toast.success('팀 참여 요청을 보냈습니다!')
   }
 
-  const handleTransferLeader = (member: typeof mockTeamMembers[0]) => {
+  const handleTransferLeader = (member: { name: string; position: string; isLeader: boolean; kakaoId: string }) => {
     setSelectedMember(member)
     setShowTransferLeaderModal(true)
   }
