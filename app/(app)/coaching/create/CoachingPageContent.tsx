@@ -110,6 +110,7 @@ export default function CoachingPageContent() {
   const [gameDate, setGameDate] = useState<Date>(new Date())
   const [result, setResult] = useState<GameResult | null>(null)
   const [matchedTeamId, setMatchedTeamId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // DNA별 색상 스타일
   const getDnaStyle = (dna?: string) => {
@@ -200,6 +201,8 @@ export default function CoachingPageContent() {
       return
     }
 
+    setIsSubmitting(true)
+
     try {
       // 게임 ID는 matchedTeamId 또는 임시 생성
       const gameId = matchedTeamId ? Number(matchedTeamId) : Date.now()
@@ -217,14 +220,15 @@ export default function CoachingPageContent() {
         positionFeedbacks,
       }
 
+      toast.loading('피드백 제출 중...', { id: 'feedback-submit' })
       const feedbackResponse = await coachingService.finishGameAndFeedback(gameId, feedbackRequest)
-
-      toast.success('피드백 제출 완료!')
+      toast.success('피드백 제출 완료!', { id: 'feedback-submit' })
 
       // AI 리포트 생성 API 호출
+      toast.loading('AI 코치가 분석 중입니다...', { id: 'ai-report' })
       const reportResponse = await coachingService.createReport(feedbackResponse.gameId, feedbackResponse.teamId)
-
       toast.success('AI 리포트 생성 완료!', {
+        id: 'ai-report',
         description: reportResponse.aiComment.substring(0, 50) + '...',
       })
 
@@ -258,6 +262,8 @@ export default function CoachingPageContent() {
       toast.error('피드백 제출 실패', {
         description: errorMessage,
       })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -421,10 +427,10 @@ export default function CoachingPageContent() {
           className="w-full"
           size="lg"
           onClick={handleSubmit}
-          disabled={!result || Object.keys(feedbackAnswers).length === 0}
+          disabled={!result || Object.keys(feedbackAnswers).length === 0 || isSubmitting}
         >
           <Sparkles className="mr-2 h-5 w-5" />
-          AI 코칭 받기
+          {isSubmitting ? 'AI 분석 중...' : 'AI 코칭 받기'}
         </Button>
       </main>
 
